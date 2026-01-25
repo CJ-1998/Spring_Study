@@ -44,7 +44,7 @@ services:
       - redis # redis가 실행된 후 실행
     environment:
       # 1. DB 접속 설정 (중요: localhost 대신 서비스명 'db' 사용)
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3307/${MYSQL_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
 

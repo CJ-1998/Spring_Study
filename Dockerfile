@@ -14,7 +14,7 @@ RUN gradle clean build -x test --no-daemon
 
 # ---------- (2단계: 실행 환경) ----------
 # 실제 실행할 가벼운 이미지를 불러옵니다.
-FROM openjdk:17-jdk-slim
+FROM amazoncorretto:17
 
 WORKDIR /app
 
