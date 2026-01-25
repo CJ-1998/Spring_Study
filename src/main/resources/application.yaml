@@ -1,3 +1,15 @@
 spring:
   application:
     name: SpringStudy
+  profiles:
+    active: dev
+    group:
+      dev:
+        - "dev"
+        - "dev-db"
+      prod:
+        - "prod"
+        - "prod-db"
+      test:
+        - "test"
+        - "test-db"
