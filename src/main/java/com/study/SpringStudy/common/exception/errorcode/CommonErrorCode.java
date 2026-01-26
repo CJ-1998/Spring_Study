@@ -1,6 +1,5 @@
-package com.study.SpringStudy.common.exception;
+package com.study.SpringStudy.common.exception.errorcode;
 
-import com.study.SpringStudy.common.exception.errorcode.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
