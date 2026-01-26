@@ -1,7 +1,7 @@
 spring:
   datasource:
     # 도커 내부 접속: 서비스명(db) + 3306 포트
-    url: jdbc:mysql://db:3306/${MYSQL_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    url: ${MYSQL_URL}
     username: ${MYSQL_USER}
     password: ${MYSQL_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -9,5 +9,5 @@ spring:
   data:
     redis:
       host: redis # docker-compose의 서비스명
-      port: 6379
+      port: ${REDIS_PORT}
       password: ${REDIS_PASSWORD}

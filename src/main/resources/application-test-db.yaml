@@ -1,11 +1,6 @@
 spring:
-  config:
-    # [중요] 로컬에 있는 .env 파일을 읽어 변수로 등록합니다.
-    import: optional:file:.env[.properties]
-
   datasource:
-    # 로컬 접속: localhost + 3307 포트
-    url: jdbc:mysql://localhost:3307/${MYSQL_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    url: ${MYSQL_URL}
     username: ${MYSQL_USER}      # .env의 MYSQL_USER 값
     password: ${MYSQL_PASSWORD}  # .env의 MYSQL_PASSWORD 값
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -13,5 +8,5 @@ spring:
   data:
     redis:
       host: localhost
-      port: 6379
+      port: ${REDIS_PORT}
       password: ${REDIS_PASSWORD} # .env의 REDIS_PASSWORD 값

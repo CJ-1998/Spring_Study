@@ -13,3 +13,11 @@ spring:
       test:
         - "test"
         - "test-db"
+  config:
+    # [중요] 로컬에 있는 .env 파일을 읽어 변수로 등록합니다.
+    import: optional:file:.env[.properties]
+
+# context path
+server:
+  servlet:
+    context-path: /api/v1
