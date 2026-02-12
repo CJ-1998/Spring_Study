@@ -13,4 +13,4 @@ scrape_configs:
       # Docker Network 내부이므로 컨테이너 서비스명(application)과 내부 포트(8080) 사용
       - targets: [ 'host.docker.internal:8080' ]
         labels:
-          application: 'server'
+          application: 'SpringStudy'

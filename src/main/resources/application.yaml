@@ -27,12 +27,12 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, info, Prometheus, metrics
+        include: health, info, prometheus, metrics
       base-path: /actuator
   endpoint:
     health:
       show-details: always
-    Prometheus:
+    prometheus:
       access: unrestricted
   metrics:
     tags:
