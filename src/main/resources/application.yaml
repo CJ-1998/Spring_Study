@@ -21,3 +21,19 @@ spring:
 server:
   servlet:
     context-path: /api/v1
+
+# --- 모니터링 설정 (Actuator) ---
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, Prometheus, metrics
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+    Prometheus:
+      access: unrestricted
+  metrics:
+    tags:
+      application: ${spring.application.name}
