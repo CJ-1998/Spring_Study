@@ -1,7 +1,7 @@
 spring:
   application:
     name: SpringStudy
-    # profiles:
+  profiles:
     # active: dev
     group:
       dev:

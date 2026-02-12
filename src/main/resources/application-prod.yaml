@@ -4,7 +4,7 @@ spring:
     # validate = 엔티티와 테이블 스키마가 일치하는지 확인만 수행 (불일치 시 시작 불가)
     # 또는 none (아무것도 안 함)
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
 
     # 3. SQL 로깅 및 방언 설정
     properties:
