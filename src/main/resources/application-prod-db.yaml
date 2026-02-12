@@ -8,6 +8,6 @@ spring:
 
   data:
     redis:
-      host: redis # docker-compose의 서비스명
+      host: ${REDIS_HOST} # docker-compose의 서비스명
       port: ${REDIS_PORT}
       password: ${REDIS_PASSWORD}

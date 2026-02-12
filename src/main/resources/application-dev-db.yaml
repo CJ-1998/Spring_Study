@@ -7,6 +7,6 @@ spring:
 
   data:
     redis:
-      host: localhost
+      host: ${REDIS_HOST}
       port: ${REDIS_PORT}
       password: ${REDIS_PASSWORD} # .env의 REDIS_PASSWORD 값
