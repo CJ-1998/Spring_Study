@@ -4,7 +4,7 @@ services:
     image: mysql:8.0
     container_name: SpringStudy-MySQL
     ports:
-      - "3306:3306" # 호스트:컨테이너
+      - "${MYSQL_PORT}:3306" # 호스트:컨테이너
     env_file:
       - .env.dev
     environment:
@@ -13,6 +13,12 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    # 헬스체크 추가: 진짜 DB가 준비되었는지 확인
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     volumes:
       - mysql_data:/var/lib/mysql # 데이터 영구 저장을 위한 볼륨 연결
     networks:
@@ -24,11 +30,17 @@ services:
     image: redis:alpine
     container_name: SpringStudy-Redis
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT}:6379"
     env_file:
       - .env.dev
     # 비밀번호 설정을 위해 커맨드 실행 (비밀번호가 필요 없다면 이 줄 제거)
     command: redis-server --requirepass ${REDIS_PASSWORD}
+    # Redis 헬스체크
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     volumes:
       - redis_data:/data
     networks:
