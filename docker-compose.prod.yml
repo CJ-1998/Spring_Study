@@ -77,3 +77,70 @@ services:
     networks:
       - app-network
     restart: always
+
+  # ----------------------------
+  # 모니터링 시스템 (PLG Stack)
+  # ----------------------------
+
+  # 1. Prometheus (메트릭 수집)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: Prometheus
+    volumes:
+      - ./monitoring/prometheus-prod.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    ports:
+      - "${PROMETHEUS_PORT}:9090" # EC2 허용 포트 매핑 (외부 접근용)
+    networks:
+      - app-network
+    restart: always
+
+  # 2. Loki (로그 저장소)
+  loki:
+    image: grafana/loki:2.9.0
+    container_name: Loki
+    volumes:
+      - ./monitoring/loki-config.yaml:/etc/loki/local-config.yaml
+      - loki_data:/loki
+    ports:
+      - "${LOKI_PORT}:3100" # EC2 허용 포트 매핑 (디버깅용, 실제론 내부 통신)
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - app-network
+    restart: always
+
+  # 3. Promtail (로그 수집 에이전트)
+  promtail:
+    image: grafana/promtail:2.9.0
+    container_name: Promtail
+    volumes:
+      - ./monitoring/promtail-config.yaml:/etc/promtail/config.yaml
+      - /var/run/docker.sock:/var/run/docker.sock # 도커 컨테이너 정보 읽기
+      - /var/lib/docker/containers:/var/lib/docker/containers # 컨테이너 로그 파일 읽기
+    command: -config.file=/etc/promtail/config.yaml
+    networks:
+      - app-network
+    depends_on:
+      - loki
+    restart: always
+
+  # 4. Grafana (대시보드 UI)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: Grafana
+    ports:
+      - "${GRAFANA_PORT}:3000" # EC2 허용 포트 8001 -> 내부 3000
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD} # 초기 비밀번호 설정 (보안상 변경 권장)
+      - GF_SERVER_DOMAIN=${GRAFANA_DOMAIN}
+      # WebSocket 연결을 허용할 도메인 명시 (Loki에서 live로 로그 보고 싶을 때)
+      - GF_LIVE_ALLOWED_ORIGINS=${GRAFANA_ALLOWED_ORIGINS:-*}
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - app-network
+    depends_on:
+      - prometheus
+      - loki
+    restart: always
