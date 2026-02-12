@@ -1,12 +1,12 @@
-version: '3.8'
-
 services:
   # MySQL 서비스
   db:
     image: mysql:8.0
     container_name: SpringStudy-MySQL
     ports:
-      - "3307:3306" # 호스트:컨테이너
+      - "3306:3306" # 호스트:컨테이너
+    env_file:
+      - .env.prod
     environment:
       # .env 파일에서 값을 가져옵니다
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -26,6 +26,8 @@ services:
     ports:
       - "6379:6379"
     # 비밀번호 설정을 위해 커맨드 실행 (비밀번호가 필요 없다면 이 줄 제거)
+    env_file:
+      - .env.prod
     command: redis-server --requirepass ${REDIS_PASSWORD}
     volumes:
       - redis_data:/data
@@ -61,13 +63,3 @@ services:
     networks:
       - app-network
     restart: always
-
-# 볼륨 정의 (컨테이너를 삭제해도 데이터는 유지됨)
-volumes:
-  mysql_data:
-  redis_data:
-
-# 네트워크 정의 (컨테이너 간 통신)
-networks:
-  app-network:
-    driver: bridge

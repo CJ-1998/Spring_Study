@@ -1,0 +1,11 @@
+# 공통 설정은 docker-compose.yml에 추가
+
+# 볼륨 정의 (컨테이너를 삭제해도 데이터는 유지됨)
+volumes:
+  mysql_data:
+  redis_data:
+
+# 네트워크 정의 (컨테이너 간 통신)
+networks:
+  app-network:
+    driver: bridge
