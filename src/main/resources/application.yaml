@@ -1,8 +1,8 @@
 spring:
   application:
     name: SpringStudy
-  profiles:
-    active: dev
+    # profiles:
+    # active: dev
     group:
       dev:
         - "dev"
@@ -13,9 +13,9 @@ spring:
       test:
         - "test"
         - "test-db"
-  config:
+    # config:
     # [중요] 로컬에 있는 .env 파일을 읽어 변수로 등록합니다.
-    import: optional:file:.env[.properties]
+    # import: optional:file:.env[.properties]
 
 # context path
 server:
