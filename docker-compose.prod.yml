@@ -167,3 +167,4 @@ services:
       - ./minio_data:/data
     networks:
       - app-network
+    restart: always

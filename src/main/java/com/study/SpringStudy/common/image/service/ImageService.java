@@ -36,8 +36,11 @@ public class ImageService {
      * 이미지 업로드 메인 메서드
      */
     public String uploadImage(MultipartFile file) {
-        // 1. 버킷 준비 (존재 확인 및 생성/정책 설정)
+        // 버킷 준비 (존재 확인 및 생성/정책 설정)
         // ensureBucketExists();
+
+        // 1. 파일 유효성 검사
+        validateFile(file);
 
         // 2. 고유 파일명 생성
         String saveFilename = generateUniqueFilename(file.getOriginalFilename());
@@ -64,6 +67,16 @@ public class ImageService {
         } catch (Exception e) {
             log.error("Bucket checking/creation failed", e);
             throw new RuntimeException("MinIO 버킷 확인/생성 중 오류 발생: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 파일 유효성 검사 파일 크기와 Content-Type 검증
+     */
+    private void validateFile(MultipartFile file) {
+        if (file.isEmpty() || file.getContentType() == null || !file.getContentType().startsWith("image/")) {
+            log.error("Invalid File");
+            throw new IllegalArgumentException("올바른 이미지 파일이 아닙니다.");
         }
     }
 
