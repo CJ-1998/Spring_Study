@@ -34,8 +34,6 @@ management:
   endpoint:
     health:
       show-details: always
-    prometheus:
-      access: unrestricted
   metrics:
     tags:
       application: ${spring.application.name}
