@@ -31,7 +31,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
     // Swagger(Springdoc) 의존성 추가
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0' // (버전은 최신 버전을 확인하고 적용하세요)
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.3'
 
     // 모니터링 위한 의존성 추가
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
