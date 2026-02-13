@@ -1,8 +1,10 @@
 spring:
   application:
     name: SpringStudy
+  # spring 서버 local에서 IntelliJ로 띄울 때
+  # application-dev.yaml 등 읽어오기 위해선 active 필요
   profiles:
-    # active: dev
+    active: dev
     group:
       dev:
         - "dev"
@@ -21,3 +23,17 @@ spring:
 server:
   servlet:
     context-path: /api/v1
+
+# --- 모니터링 설정 (Actuator) ---
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus, metrics
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: ${spring.application.name}

@@ -1,10 +1,10 @@
 spring:
   jpa:
-    # 2. DDL 자동 생성 옵션 (가장 중요)
+    # DDL 자동 생성 옵션 (가장 중요)
     hibernate:
       ddl-auto: update
 
-    # 3. SQL 로깅 및 방언 설정
+    # SQL 로깅 및 방언 설정
     properties:
       hibernate:
         format_sql: true       # 로그에 찍히는 SQL을 보기 좋게 포맷팅
@@ -12,8 +12,13 @@ spring:
         highlight_sql: true    # 예약어들에 하이라이트 되어 출력
         dialect: org.hibernate.dialect.MySQL8Dialect # 사용하는 DB에 맞는 방언 설정
 
-    # 4. OSIV 설정 (성능 최적화를 위해 false 권장)
+    # OSIV 설정 (성능 최적화를 위해 false 권장)
     open-in-view: false
+
+  # spring 서버 local에서 IntelliJ로 띄울 때
+  # application.yaml에 사용된 .env.dev 값들 읽어오기 위해 필요
+  config:
+    import: optional:file:.env.dev[.properties]
 
 logging:
   level:
@@ -28,3 +33,7 @@ logging:
 
     # [JPA] SQL의 ?(물음표)에 바인딩되는 실제 값 확인 (필수)
     org.hibernate.orm.jdbc.bind: TRACE
+  
+  # 로그들 해당 파일에 작성
+  file:
+    name: logs/spring.log
