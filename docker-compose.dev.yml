@@ -62,7 +62,7 @@ services:
       - ./monitoring/prometheus-dev.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
     ports:
-      - "${PROMETHEUS_PORT}:9090" # EC2 허용 포트 매핑 (외부 접근용)
+      - "${PROMETHEUS_PORT}:9090"
     networks:
       - app-network
     restart: always
@@ -75,7 +75,7 @@ services:
       - ./monitoring/loki-config.yaml:/etc/loki/local-config.yaml
       - loki_data:/loki
     ports:
-      - "${LOKI_PORT}:3100" # EC2 허용 포트 매핑 (디버깅용, 실제론 내부 통신)
+      - "${LOKI_PORT}:3100"
     # 설정 파일 지정해 실행
     command: -config.file=/etc/loki/local-config.yaml
     networks:
@@ -105,7 +105,7 @@ services:
     image: grafana/grafana:latest
     container_name: Grafana
     ports:
-      - "${GRAFANA_PORT}:3000" # EC2 허용 포트 8001 -> 내부 3000
+      - "${GRAFANA_PORT}:3000"
     environment:
       - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD} # 초기 비밀번호 설정 (보안상 변경 권장)
@@ -121,3 +121,19 @@ services:
       - prometheus
       - loki
     restart: always
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    command: server /data --console-address ":9001"
+    ports:
+      - "${MINIO_API_PORT}:9000" # API Port
+      - "${MINIO_CONSOLE_PORT}:9001" # Console Port
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
+      MINIO_BROWSER_REDIRECT_URL: ${MINIO_BROWSER_REDIRECT_URL}
+    volumes:
+      - ./minio_data:/data
+    networks:
+      - app-network

@@ -7,6 +7,7 @@ volumes:
   prometheus_data:
   grafana_data:
   loki_data:
+  minio_data:
 
 # 네트워크 정의 (컨테이너 간 통신)
 networks:
