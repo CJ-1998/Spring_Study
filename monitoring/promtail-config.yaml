@@ -1,3 +1,4 @@
+# server, positions, clients -> 기본 설정
 server:
   http_listen_port: 9080
   grpc_listen_port: 0
@@ -8,7 +9,9 @@ positions:
 clients:
   - url: http://loki:3100/loki/api/v1/push
 
+# 무엇을 읽을지 정의하는 곳
 scrape_configs:
+  # 시스템 로그 수집
   - job_name: system
     static_configs:
       - targets:
@@ -26,3 +29,15 @@ scrape_configs:
       - source_labels: [ '__meta_docker_container_name' ]
         regex: '/(.*)'
         target_label: 'container'
+
+  # local로 뜨는 spring 서버 로그 수집
+  - job_name: spring-local
+    static_configs:
+      - targets: [ localhost ]
+        labels:
+          job: spring-boot
+          app: spring-study-dev
+          # docker compose의 promtail volumes 설정 때문에
+          # logs/spring.log가 /var/log/spring-app/spring.log로 보임
+          # promtail이 이 경로 감시하다 파일 내용 변하면 Loki로 보냄
+          __path__: /var/log/spring-app/*.log

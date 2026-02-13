@@ -1,8 +1,10 @@
 spring:
   application:
     name: SpringStudy
+  # spring 서버 local에서 IntelliJ로 띄울 때
+  # application-dev.yaml 등 읽어오기 위해선 active 필요
   profiles:
-    # active: dev
+    active: dev
     group:
       dev:
         - "dev"

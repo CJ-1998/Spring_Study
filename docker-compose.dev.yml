@@ -76,6 +76,7 @@ services:
       - loki_data:/loki
     ports:
       - "${LOKI_PORT}:3100" # EC2 허용 포트 매핑 (디버깅용, 실제론 내부 통신)
+    # 설정 파일 지정해 실행
     command: -config.file=/etc/loki/local-config.yaml
     networks:
       - app-network
@@ -89,6 +90,9 @@ services:
       - ./monitoring/promtail-config.yaml:/etc/promtail/config.yaml
       - /var/run/docker.sock:/var/run/docker.sock # 도커 컨테이너 정보 읽기
       - /var/lib/docker/containers:/var/lib/docker/containers # 컨테이너 로그 파일 읽기
+      - ./logs:/var/log/spring-app
+      # IntelliJ가 만든 log 파일 컴퓨터에 있어 docker 컨테이너가 볼 수 없음
+      # 컴퓨터의 logs 폴더를 컨테이너 내부의 /var/log/spring-app과 연결
     command: -config.file=/etc/promtail/config.yaml
     networks:
       - app-network
@@ -110,6 +114,7 @@ services:
       - GF_LIVE_ALLOWED_ORIGINS=${GRAFANA_ALLOWED_ORIGINS:-*}
     volumes:
       - grafana_data:/var/lib/grafana
+      - ./logs:/var/log/spring-app
     networks:
       - app-network
     depends_on:

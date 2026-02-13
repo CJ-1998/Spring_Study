@@ -39,3 +39,6 @@ out/
 ### env ###
 .env*
 !env.template
+
+### log ###
+logs/*
