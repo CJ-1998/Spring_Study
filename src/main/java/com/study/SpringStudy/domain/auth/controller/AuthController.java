@@ -4,6 +4,7 @@ import com.study.SpringStudy.common.exception.errorcode.CommonErrorCode;
 import com.study.SpringStudy.common.response.ApiResponse;
 import com.study.SpringStudy.domain.auth.dto.request.LoginRequest;
 import com.study.SpringStudy.domain.auth.dto.request.RefreshRequest;
+import com.study.SpringStudy.domain.auth.dto.request.SignupRequest;
 import com.study.SpringStudy.domain.auth.dto.response.LoginResponse;
 import com.study.SpringStudy.domain.auth.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +26,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+
+    @Operation(summary = "회원가입")
+    @PostMapping("/signup")
+    public ResponseEntity<ApiResponse<String>> signup(@Valid @RequestBody SignupRequest request) {
+
+        // 서비스 계층에 비즈니스 로직 위임
+        authService.signup(request);
+
+        // 회원가입 성공 응답 반환 (성공 시 보통 데이터 본문 없이 메시지만 내려주거나 null 처리)
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("회원가입이 완료되었습니다."));
+    }
 
     @Operation(summary = "로그인")
     @PostMapping("/login")
