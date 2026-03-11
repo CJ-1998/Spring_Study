@@ -28,4 +28,12 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+    public static User createUser(String email, String password) {
+        return User.builder()
+            .email(email)
+            .password(password)
+            .role(Role.USER)
+            .build();
+    }
 }
