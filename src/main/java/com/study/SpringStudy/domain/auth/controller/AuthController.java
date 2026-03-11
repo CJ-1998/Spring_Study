@@ -8,6 +8,7 @@ import com.study.SpringStudy.domain.auth.dto.request.SignupRequest;
 import com.study.SpringStudy.domain.auth.dto.response.LoginResponse;
 import com.study.SpringStudy.domain.auth.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -28,6 +29,7 @@ public class AuthController {
     private final AuthService authService;
 
     @Operation(summary = "회원가입")
+    @SecurityRequirements()
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<String>> signup(@Valid @RequestBody SignupRequest request) {
 
@@ -39,6 +41,7 @@ public class AuthController {
     }
 
     @Operation(summary = "로그인")
+    @SecurityRequirements()
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -66,6 +69,7 @@ public class AuthController {
     }
 
     @Operation(summary = "토큰 재발급 (Access Token 만료 시)")
+    @SecurityRequirements()
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse<LoginResponse>> refresh(@Valid @RequestBody RefreshRequest refreshRequest) {
         String refreshToken = refreshRequest.getRefreshToken();
