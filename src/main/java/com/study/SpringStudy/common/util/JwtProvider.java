@@ -60,4 +60,12 @@ public class JwtProvider {
                 .parseSignedClaims(token).getPayload().getSubject();
         return UUID.fromString(subject);
     }
+
+    // 토큰의 남은 유효 시간을 Milliseconds 단위로 반환
+    public long getRemainingExpirationTime(String token) {
+        Date expiration = Jwts.parser().verifyWith(key).build()
+                .parseSignedClaims(token).getPayload().getExpiration();
+        long now = new Date().getTime();
+        return expiration.getTime() - now;
+    }
 }
