@@ -39,15 +39,22 @@ public class AuthController {
     public ResponseEntity<ApiResponse<String>> logout(HttpServletRequest request) {
 
         // 1. 헤더에서 토큰 추출 (Bearer 제외)
-        String bearerToken = request.getHeader("Authorization");
-        if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
+        String token = resolveToken(request);
+        if (token == null) {
             return ResponseEntity.badRequest().body(ApiResponse.fail(CommonErrorCode.INVALID_INPUT_VALUE));
         }
-        String token = bearerToken.substring(7);
 
         // 2. 서비스 호출하여 블랙리스트 등록
         authService.logout(token);
 
         return ResponseEntity.ok(ApiResponse.success("성공적으로 로그아웃 되었습니다."));
+    }
+
+    private String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
     }
 }
