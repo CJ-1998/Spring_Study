@@ -1,10 +1,12 @@
 package com.study.SpringStudy.domain.auth.controller;
 
+import com.study.SpringStudy.common.exception.errorcode.CommonErrorCode;
 import com.study.SpringStudy.common.response.ApiResponse;
 import com.study.SpringStudy.domain.auth.dto.request.LoginRequest;
 import com.study.SpringStudy.domain.auth.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -30,5 +32,22 @@ public class AuthController {
 
         // 2. 작성해두신 공통 응답 객체(ApiResponse)로 JWT 토큰 반환
         return ResponseEntity.ok(ApiResponse.success(token));
+    }
+
+    @Operation(summary = "로그아웃")
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<String>> logout(HttpServletRequest request) {
+
+        // 1. 헤더에서 토큰 추출 (Bearer 제외)
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest().body(ApiResponse.fail(CommonErrorCode.INVALID_INPUT_VALUE));
+        }
+        String token = bearerToken.substring(7);
+
+        // 2. 서비스 호출하여 블랙리스트 등록
+        authService.logout(token);
+
+        return ResponseEntity.ok(ApiResponse.success("성공적으로 로그아웃 되었습니다."));
     }
 }
