@@ -36,7 +36,7 @@ public class AuthService {
     public void logout(String token) {
         // 1. 토큰이 유효한지 1차 확인
         if (!jwtProvider.validateToken(token)) {
-            throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
+            throw new ApiException(UserErrorCode.INVALID_TOKEN);
         }
 
         // 2. 토큰의 남은 만료 시간 계산
