@@ -3,6 +3,8 @@ package com.study.SpringStudy.domain.auth.controller;
 import com.study.SpringStudy.common.exception.errorcode.CommonErrorCode;
 import com.study.SpringStudy.common.response.ApiResponse;
 import com.study.SpringStudy.domain.auth.dto.request.LoginRequest;
+import com.study.SpringStudy.domain.auth.dto.request.RefreshRequest;
+import com.study.SpringStudy.domain.auth.dto.response.LoginResponse;
 import com.study.SpringStudy.domain.auth.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,13 +27,13 @@ public class AuthController {
 
     @Operation(summary = "로그인")
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<String>> login(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest loginRequest) {
 
         // 1. 서비스 로직 호출 (이메일, 평문 비밀번호 전달)
-        String token = authService.login(loginRequest.getEmail(), loginRequest.getPassword());
+        LoginResponse loginResponse = authService.login(loginRequest.getEmail(), loginRequest.getPassword());
 
-        // 2. 작성해두신 공통 응답 객체(ApiResponse)로 JWT 토큰 반환
-        return ResponseEntity.ok(ApiResponse.success(token));
+        // 2. 작성해두신 공통 응답 객체(ApiResponse)로 access, refresh 토큰 반환
+        return ResponseEntity.ok(ApiResponse.success(loginResponse));
     }
 
     @Operation(summary = "로그아웃")
@@ -48,6 +50,19 @@ public class AuthController {
         authService.logout(token);
 
         return ResponseEntity.ok(ApiResponse.success("성공적으로 로그아웃 되었습니다."));
+    }
+
+    @Operation(summary = "토큰 재발급 (Access Token 만료 시)")
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse<LoginResponse>> refresh(@Valid @RequestBody RefreshRequest refreshRequest) {
+        String refreshToken = refreshRequest.getRefreshToken();
+
+        if (refreshToken == null) {
+            return ResponseEntity.badRequest().body(ApiResponse.fail(CommonErrorCode.INVALID_INPUT_VALUE));
+        }
+
+        LoginResponse loginResponse = authService.refresh(refreshToken);
+        return ResponseEntity.ok(ApiResponse.success(loginResponse));
     }
 
     private String resolveToken(HttpServletRequest request) {

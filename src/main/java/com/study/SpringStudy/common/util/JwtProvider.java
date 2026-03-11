@@ -1,5 +1,6 @@
 package com.study.SpringStudy.common.util;
 
+import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -18,8 +19,11 @@ public class JwtProvider {
     @Value("${jwt.secret}")
     private String secret;
 
-    @Value("${jwt.expiration}")
-    private long expirationTime;
+    @Value("${jwt.access-expiration}")
+    private long accessExpiration;
+
+    @Value("${jwt.refresh-expiration}")
+    private long refreshExpiration;
 
     private SecretKey key;
 
@@ -29,18 +33,31 @@ public class JwtProvider {
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    // 토큰 생성
-    public String createToken(UUID userId, String role) {
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + expirationTime);
+    // Access Token 생성 (권한 정보 포함, 짧은 수명)
+    public String createAccessToken(UUID userId, String role) {
+        return buildToken(userId, role, accessExpiration);
+    }
 
-        return Jwts.builder()
-                .subject(userId.toString()) // 💡 PK인 UUID를 안전하게 String으로 변환
-                .claim("role", role)
+    // Refresh Token 생성 (권한 정보 불필요, 긴 수명)
+    public String createRefreshToken(UUID userId) {
+        return buildToken(userId, null, refreshExpiration);
+    }
+
+    // 중복 코드 제거를 위한 private 메서드
+    private String buildToken(UUID userId, String role, long expiration) {
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + expiration);
+
+        JwtBuilder builder = Jwts.builder()
+                .subject(userId.toString())
                 .issuedAt(now)
                 .expiration(validity)
-                .signWith(key)
-                .compact();
+                .signWith(key);
+
+        if (role != null) {
+            builder.claim("role", role);
+        }
+        return builder.compact();
     }
 
     // 토큰 검증
@@ -67,5 +84,10 @@ public class JwtProvider {
                 .parseSignedClaims(token).getPayload().getExpiration();
         long now = new Date().getTime();
         return expiration.getTime() - now;
+    }
+
+    // Refresh Token의 만료 시간을 외부(Service)에서 쓸 수 있도록 Getter 제공
+    public long getRefreshExpiration() {
+        return refreshExpiration;
     }
 }
