@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,7 +35,7 @@ public class AuthController {
         authService.signup(request);
 
         // 회원가입 성공 응답 반환 (성공 시 보통 데이터 본문 없이 메시지만 내려주거나 null 처리)
-        return ResponseEntity.ok(ApiResponse.success("회원가입이 완료되었습니다."));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("회원가입이 완료되었습니다."));
     }
 
     @Operation(summary = "로그인")
