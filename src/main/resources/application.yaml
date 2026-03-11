@@ -45,3 +45,8 @@ minio:
 app:
   storage:
     url: ${APP_STORAGE_URL}
+
+# JWT 설정
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
