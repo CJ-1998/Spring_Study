@@ -3,6 +3,7 @@
 # 볼륨 정의 (컨테이너를 삭제해도 데이터는 유지됨)
 volumes:
   mysql_data:
+  postgres_data:
   redis_data:
   prometheus_data:
   grafana_data:

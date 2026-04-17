@@ -36,6 +36,30 @@ services:
       - app-network
     restart: always
 
+  # PostgreSQL 서비스
+  postgres:
+    image: postgres:15-alpine # 버전에 맞게 수정 가능
+    container_name: SpringStudy-Postgres
+    ports:
+      - "${POSTGRES_PORT}:5432" # 호스트:컨테이너
+    env_file:
+      - .env.prod
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      TZ: Asia/Seoul
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    restart: always
+
   # Redis 서비스
   redis:
     image: redis:alpine
@@ -66,6 +90,8 @@ services:
       - "${SERVER_PORT}:8080" # 호스트:컨테이너
     depends_on:
       db: # db가 실행된 후 실행
+        condition: service_healthy
+      postgres:
         condition: service_healthy
       redis: # redis가 실행된 후 실행
         condition: service_healthy
