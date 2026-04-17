@@ -1,10 +1,13 @@
 spring:
   datasource:
-    # 도커 내부 접속: 서비스명(db) + 3306 포트
-    url: ${MYSQL_URL}
-    username: ${MYSQL_USER}
-    password: ${MYSQL_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${POSTGRES_URL}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    # url: ${MYSQL_URL}
+    # username: ${MYSQL_USER}      # .env의 MYSQL_USER 값
+    # password: ${MYSQL_PASSWORD}  # .env의 MYSQL_PASSWORD 값
+    # driver-class-name: com.mysql.cj.jdbc.Driver
 
   data:
     redis:

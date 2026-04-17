@@ -10,7 +10,8 @@ spring:
         format_sql: true       # 로그에 찍히는 SQL을 보기 좋게 포맷팅
         show_sql: true         # 실행되는 SQL을 콘솔에 출력
         highlight_sql: true    # 예약어들에 하이라이트 되어 출력
-        dialect: org.hibernate.dialect.MySQL8Dialect # 사용하는 DB에 맞는 방언 설정
+        dialect: org.hibernate.dialect.PostgreSQLDialect # PostgreSQL 방언
+        # dialect: org.hibernate.dialect.MySQL8Dialect # MySQL 방언
 
     # 4. OSIV 설정 (성능 최적화를 위해 false 권장)
     open-in-view: false
