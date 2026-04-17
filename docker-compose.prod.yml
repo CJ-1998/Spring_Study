@@ -1,3 +1,14 @@
+# 실행 명령어 : docker-compose --env-file .env.prod -f docker-compose.yml -f docker-compose.prod.yml up -d
+# 빌드 명령어 : docker-compose --env-file .env.prod -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+# 종료 명령어 : docker-compose --env-file .env.prod -f docker-compose.yml -f docker-compose.prod.yml down
+# log 명령어 : docker-compose --env-file .env.prod -f docker-compose.yml -f docker-compose.prod.yml logs -f
+
+# 현재 컨테이너 상태 확인 : docker ps
+# 특정 컨테이너만 실행, 종료, log 보고 싶다면? : 위 명령에 제일 뒤에 services 이름 넣기 (ex: db, redis, application, ...)
+
+# prod 모니터링 dashboard 주소 :
+# prod minio dashboard 주소 :
+
 services:
   # MySQL 서비스
   db:
@@ -78,6 +89,8 @@ services:
 
       APP_STORAGE_URL: ${APP_STORAGE_URL}
 
+      TZ: Asia/Seoul
+
     env_file:
       - .env.prod # 운용 환경변수 파일 로드
 
@@ -143,6 +156,9 @@ services:
       - GF_SERVER_DOMAIN=${GRAFANA_DOMAIN}
       # WebSocket 연결을 허용할 도메인 명시 (Loki에서 live로 로그 보고 싶을 때)
       - GF_LIVE_ALLOWED_ORIGINS=${GRAFANA_ALLOWED_ORIGINS:-*}
+      # [추가] 서브패스를 위한 Grafana 내부 설정 (HTTPS)
+      - GF_SERVER_ROOT_URL=https://${GRAFANA_DOMAIN}/grafana/
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
     volumes:
       - grafana_data:/var/lib/grafana
     networks:
@@ -165,6 +181,49 @@ services:
       MINIO_BROWSER_REDIRECT_URL: ${MINIO_BROWSER_REDIRECT_URL}
     volumes:
       - ./minio_data:/data
+    networks:
+      - app-network
+    restart: always
+
+  # Nginx 설정
+  nginx:
+    image: nginx:alpine
+    container_name: Nginx-Prod
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.prod.conf:/etc/nginx/conf.d/default.conf
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    networks:
+      - app-network
+    depends_on:
+      - application
+      - grafana
+      - minio
+      - frontend
+    restart: always
+
+  # Certbot (SSL 자동 발급 및 갱신)
+  certbot:
+    image: certbot/certbot
+    container_name: Certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    networks:
+      - app-network
+    restart: always
+
+  # React 프론트엔드 서비스
+  frontend:
+    container_name: Frontend
+    build:
+      # docker-compose.prod.yml 위치(Backend/~~)에서 Frontend 폴더로 가는 상대 경로
+      context: ../../Frontend
+      dockerfile: Dockerfile
     networks:
       - app-network
     restart: always
