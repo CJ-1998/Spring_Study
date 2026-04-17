@@ -1,3 +1,14 @@
+# 실행 명령어 : docker-compose --env-file .env.dev -f docker-compose.yml -f docker-compose.dev.yml up -d
+# 빌드 명령어 : docker-compose --env-file .env.dev -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+# 종료 명령어 : docker-compose --env-file .env.dev -f docker-compose.yml -f docker-compose.dev.yml down
+# log 명령어 : docker-compose --env-file .env.dev -f docker-compose.yml -f docker-compose.dev.yml logs -f
+
+# 현재 컨테이너 상태 확인 : docker ps
+# 특정 컨테이너만 실행, 종료, log 보고 싶다면? : 위 명령에 제일 뒤에 services 이름 넣기 (ex: db, redis, application, ...)
+
+# dev 모니터링 dashboard 주소 : http://localhost:3000
+# dev minio dashboard 주소 : http://localhost:9001
+
 services:
   # MySQL 서비스
   db:
@@ -65,6 +76,8 @@ services:
       - "${PROMETHEUS_PORT}:9090"
     networks:
       - app-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     restart: always
 
   # 2. Loki (로그 저장소)
@@ -112,6 +125,9 @@ services:
       - GF_SERVER_DOMAIN=${GRAFANA_DOMAIN}
       # WebSocket 연결을 허용할 도메인 명시 (Loki에서 live로 로그 보고 싶을 때)
       - GF_LIVE_ALLOWED_ORIGINS=${GRAFANA_ALLOWED_ORIGINS:-*}
+      # [추가] 서브패스를 위한 Grafana 내부 설정 (HTTP)
+      - GF_SERVER_ROOT_URL=http://${GRAFANA_DOMAIN}/grafana/
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
     volumes:
       - grafana_data:/var/lib/grafana
       - ./logs:/var/log/spring-app
@@ -137,4 +153,21 @@ services:
       - ./minio_data:/data
     networks:
       - app-network
+    restart: always
+
+  # Nginx 설정
+  nginx:
+    image: nginx:alpine
+    container_name: Nginx-Dev
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.dev.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - app-network
+    depends_on:
+      - grafana
+      - minio
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     restart: always
